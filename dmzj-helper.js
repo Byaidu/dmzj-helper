@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  动漫之家去广告🚫，对旧式漫画页进行增强：并排布局📖、高度自适应↕️、辅助翻页↔️、暗夜模式🌙
 // @author       Byaidu
 // @match        *.dmzj.com/*
@@ -67,7 +67,8 @@
     window.addEventListener('load', function ()
     {
         jQuery = unsafeWindow['jQuery'];
-        jQuery("body").unbind("keydown");
+        jQuery("body").off("keydown");
+        $("body").off("keydown");
         //上下方向键滚动页面，左右方向键切换章节
         let img_id=0
         $("body").keydown(function(event) {

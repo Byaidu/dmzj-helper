@@ -2,7 +2,7 @@
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
 // @version      1.2
-// @description  动漫之家去广告🚫，对旧式漫画页进行增强：并排布局📖、高度自适应↕️、辅助翻页↔️、暗夜模式🌙
+// @description  动漫之家去广告🚫，对日漫版漫画页进行增强：并排布局📖、图片高度自适应↕️、辅助翻页↔️、暗夜模式🌙
 // @author       Byaidu
 // @match        *.dmzj.com/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js

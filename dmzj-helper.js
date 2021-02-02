@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
-// @version      0.8
+// @version      0.9
 // @description  动漫之家去广告🚫，对旧式漫画页进行增强：并排布局📖、高度自适应↕️、辅助翻页↔️、暗夜模式🌙
 // @author       Byaidu
 // @match        *.dmzj.com/*
@@ -37,6 +37,14 @@
         $.cookie('display_mode',1,{expires:999999,path:'/'});
         location.reload();
     }
+    //页面加载时切换章节
+    $("body").keydown(function(event) {
+        if (event.keyCode == 37) {
+            location.href = $("#prev_chapter").attr("href");
+        } else if (event.keyCode == 39) {
+            location.href = $("#next_chapter").attr("href");
+        }
+    })
     //去除原来的keydown事件
     //https://stackoverflow.com/questions/5436874/how-do-i-unbind-jquery-event-handlers-in-greasemonkey
     window.addEventListener('load', function ()

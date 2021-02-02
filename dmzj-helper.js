@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  动漫之家去广告🚫，对旧式漫画页进行增强：并排布局📖、高度自适应↕️、辅助翻页↔️、暗夜模式🌙
 // @author       Byaidu
 // @match        *.dmzj.com/*
@@ -68,31 +68,5 @@
     {
         jQuery = unsafeWindow['jQuery'];
         jQuery("body").off("keydown");
-        $("body").off("keydown");
-        //上下方向键滚动页面，左右方向键切换章节
-        let img_id=0
-        $("body").keydown(function(event) {
-            if (event.keyCode == 38) {
-                if (img_id>0){
-                    if ($("#img_"+img_id).length>0&&$("#img_"+(img_id-1)).length>0&&$("#img_"+img_id).offset().top==$("#img_"+(img_id-1)).offset().top){
-                        img_id-=2
-                    }else{
-                        img_id-=1
-                    }
-                }
-                $("html,body").animate({scrollTop: $("#img_"+img_id).offset().top}, 1000);
-            } else if (event.keyCode == 40) {
-                if ($("#img_"+img_id).length>0&&$("#img_"+(img_id+1)).length>0&&$("#img_"+img_id).offset().top==$("#img_"+(img_id+1)).offset().top){
-                    img_id+=2
-                }else{
-                    img_id+=1
-                }
-                $("html,body").animate({scrollTop: $("#img_"+img_id).offset().top}, 1000);
-            } else if (event.keyCode == 37) {
-                location.href = $("#prev_chapter").attr("href");
-            } else if (event.keyCode == 39) {
-                location.href = $("#next_chapter").attr("href");
-            }
-        })
     })
 })();

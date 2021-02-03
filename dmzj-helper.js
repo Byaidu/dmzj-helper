@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
-// @version      1.6
+// @version      1.7
 // @description  动漫之家去广告🚫，对日漫版漫画页进行增强：并排布局📖、图片高度自适应↕️、辅助翻页↔️、计数器⏱、暗夜模式🌙
 // @author       Byaidu
 // @match        *.dmzj.com/*
@@ -67,7 +67,7 @@
                     }
                 }
                 $(".counter").text(img_id+"/"+g_max_pic_count);
-                $("html,body").stop()
+                if (img_id!=0) $("html,body").stop()
                 $("html,body").animate({scrollTop: $("#img_"+img_id).offset().top}, 500);
             } else if (event.keyCode == 40) {
                 if (img_id<=g_max_pic_count){
@@ -78,7 +78,7 @@
                     }
                 }
                 $(".counter").text(img_id+"/"+g_max_pic_count);
-                $("html,body").stop()
+                if (img_id!=g_max_pic_count+1) $("html,body").stop()
                 $("html,body").animate({scrollTop: $("#img_"+img_id).offset().top}, 500);
             } else if (event.keyCode == 37) {
                 let location_new = $("#prev_chapter").attr("href");

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
-// @version      1.5
+// @version      1.6
 // @description  动漫之家去广告🚫，对日漫版漫画页进行增强：并排布局📖、图片高度自适应↕️、辅助翻页↔️、计数器⏱、暗夜模式🌙
 // @author       Byaidu
 // @match        *.dmzj.com/*
@@ -67,7 +67,8 @@
                     }
                 }
                 $(".counter").text(img_id+"/"+g_max_pic_count);
-                $("html,body").animate({scrollTop: $("#img_"+img_id).offset().top}, 1000);
+                $("html,body").stop()
+                $("html,body").animate({scrollTop: $("#img_"+img_id).offset().top}, 500);
             } else if (event.keyCode == 40) {
                 if (img_id<=g_max_pic_count){
                     if ($("#img_"+img_id).length>0&&$("#img_"+(img_id+1)).length>0&&$("#img_"+img_id).offset().top==$("#img_"+(img_id+1)).offset().top){
@@ -77,7 +78,8 @@
                     }
                 }
                 $(".counter").text(img_id+"/"+g_max_pic_count);
-                $("html,body").animate({scrollTop: $("#img_"+img_id).offset().top}, 1000);
+                $("html,body").stop()
+                $("html,body").animate({scrollTop: $("#img_"+img_id).offset().top}, 500);
             } else if (event.keyCode == 37) {
                 let location_new = $("#prev_chapter").attr("href");
                 if(location_new.indexOf("shtml")>=0)
@@ -90,7 +92,7 @@
         })
         //resize事件触发图片和浏览器对齐
         $(window).resize(function() {
-            $("html,body").animate({scrollTop: $("#img_"+img_id).offset().top}, 1000);
+            $("html,body").animate({scrollTop: $("#img_"+img_id).offset().top}, 0);
         })
         //去除原来的keydown事件
         //https://stackoverflow.com/questions/5436874/how-do-i-unbind-jquery-event-handlers-in-greasemonkey

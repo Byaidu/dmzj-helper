@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
-// @version      2.7
+// @version      3.0
 // @description  动漫之家去广告🚫，对日漫版漫画页进行增强：并排布局📖、图片高度自适应↕️、辅助翻页↔️、页码显示⏱、侧边目录栏📑、暗夜模式🌙，请设置即时注入模式以避免页面闪烁⚠️
 // @author       Byaidu
 // @match        *://*.dmzj.com/*
@@ -50,12 +50,14 @@
         //漫画高度自适应
         GM_addStyle('#center_box img{height:100vh !important;border:0px !important;padding:0px !important;}')
         //漫画上下间隔缩小
-        GM_addStyle('.inner_img{margin-top:20px !important;}')
+        GM_addStyle('.inner_img{margin-top:20px !important;user-select: none;}')
         //修改配色方案
         GM_addStyle('.r1{color:#4d4d4d !important;}')
         GM_addStyle('.hotrm_about{color:#4d4d4d !important;}')
         GM_addStyle('*[style*="display:inline;float:left"]{color:#4d4d4d !important;}')
         GM_addStyle('*[style*="display:inline;float:right"]{display:none !important;}')
+        //去除图片点击样式
+        GM_addStyle('.inner_img a{cursor:auto !important;}')
         //引入css
         const animate_css = GM_getResourceText("animate_css");
         const element_css = GM_getResourceText("element_css");
@@ -97,8 +99,8 @@
                     }
                 }
                 info_app.img_id=img_id;
-                if (img_id!=0) $("html,body").stop()
-                $("html,body").animate({scrollTop: $("#img_"+img_id).offset().top}, 500);
+                if (img_id!=0) $("html").stop()
+                $("html").animate({scrollTop: $("#img_"+img_id).offset().top}, 500);
 
             }
             function scrollDown(){
@@ -110,8 +112,8 @@
                     }
                 }
                 info_app.img_id=img_id;
-                if (img_id!=g_max_pic_count+1) $("html,body").stop()
-                $("html,body").animate({scrollTop: $("#img_"+img_id).offset().top}, 500);
+                if (img_id!=g_max_pic_count+1) $("html").stop()
+                $("html").animate({scrollTop: $("#img_"+img_id).offset().top}, 500);
             }
             $("#center_box").click(function(event){
                 if (event.clientY>$(window).height()/2){
@@ -137,7 +139,7 @@
             })
             //resize事件触发图片和浏览器对齐
             $(window).resize(function() {
-                $("html,body").animate({scrollTop: $("#img_"+img_id).offset().top}, 0);
+                $("html").animate({scrollTop: $("#img_"+img_id).offset().top}, 0);
             })
             //去除原来的keydown事件
             //https://stackoverflow.com/questions/5436874/how-do-i-unbind-jquery-event-handlers-in-greasemonkey
@@ -145,6 +147,19 @@
                 jQuery = unsafeWindow['jQuery'];
                 jQuery("body").off("keydown");
                 jQuery(".inner_img a").off("click");
+            })
+            window.addEventListener('mousewheel', function (){
+                setTimeout(function(){
+                    for (var i = 0; i < 2; i++) {
+                        if ((img_id==g_max_pic_count+1&&unsafeWindow['jQuery'](".header-box").offset().top<$("#img_"+g_max_pic_count).offset().top+$("#img_"+g_max_pic_count).height())||
+                            ($("#img_"+img_id).length>0&&unsafeWindow['jQuery'](".header-box").offset().top<$("#img_"+img_id).offset().top))
+                            img_id-=1;
+                        if ((img_id==g_max_pic_count&&unsafeWindow['jQuery'](".header-box").offset().top>$("#img_"+g_max_pic_count).offset().top+$("#img_"+g_max_pic_count).height())||
+                            ($("#img_"+(img_id+1)).length>0&&unsafeWindow['jQuery'](".header-box").offset().top>$("#img_"+(img_id+1)).offset().top))
+                            img_id+=1;
+                        info_app.img_id=img_id;
+                    }
+                },100);
             })
             //添加右下角菜单
             let info = `

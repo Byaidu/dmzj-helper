@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
-// @version      2.1
-// @description  动漫之家去广告🚫，对日漫版漫画页进行增强：并排布局📖、图片高度自适应↕️、辅助翻页↔️、页码显示⏱、暗夜模式🌙，请设置即时注入模式以避免页面闪烁⚠️
+// @version      2.5
+// @description  动漫之家去广告🚫，对日漫版漫画页进行增强：并排布局📖、图片高度自适应↕️、辅助翻页↔️、页码显示⏱、侧边目录栏📑、暗夜模式🌙，请设置即时注入模式以避免页面闪烁⚠️
 // @author       Byaidu
-// @match        *.dmzj.com/*
+// @match        *://*.dmzj.com/*
 // @resource     animate_css https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css
 // @resource     element_css https://unpkg.com/element-ui@2.15.0/lib/theme-chalk/index.css
 // @require      https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.min.js
@@ -22,6 +22,7 @@
     //去广告
     GM_addStyle('*[style*="2147"]{display:none !important;}')
     GM_addStyle('*[style*="hidden;border"]{display:none !important;}')
+    GM_addStyle('*[style*="width:960px;height:180px"]{display:none !important;}')
     GM_addStyle('.ad_bottom_code{display:none !important;}')
     GM_addStyle('.ad{display:none !important;}')
     GM_addStyle('#app_manhua{display:none !important;}')
@@ -212,6 +213,7 @@ width:120px;
                 }
             })
             //加载目录
+            let ch_id=0;
             GM_xmlhttpRequest({
                 method: "GET",
                 headers: {"User-Agent": navigator.userAgent},
@@ -221,8 +223,11 @@ width:120px;
                     var el = $( '<div></div>' );
                     el.html(response);
                     let $border=$('.cartoon_online_border a', el);
-                    $.each($border,function(){
-                        console.log(this.title+this.href)
+                    $.each($border,function(index){
+                        if (location.href.indexOf(this.href)>=0){
+                            ch_id=index;
+                            GM_addStyle('.el-menu>li:nth-child('+(ch_id+1)+'){background:rgba(255,165,0,.5) !important}')
+                        }
                         sidebar_app.items.push({
                             title:this.title,
                             href:this.href,
@@ -240,7 +245,8 @@ title="我是标题"
 :modal="modal"
 :visible="drawer"
 :with-header="false"
-:direction="direction">
+:direction="direction"
+@opened="handleOpened">
 <el-menu background-color="transparent"
 text-color="#fff"
 active-text-color="#ffd04b"
@@ -266,7 +272,11 @@ active-text-color="#ffd04b"
                 methods:{
                     handleSelect(key) {
                         location.href=this.items[key].href;
-                    }
+                    },
+                    handleOpened() {
+                        $('.el-drawer__body').animate({scrollTop:0}, 0);
+                        $('.el-drawer__body').animate({scrollTop:$('.el-menu>li:nth-child('+(ch_id-1)+')').offset().top-$('.el-drawer__body').offset().top}, 0);
+                    },
                 }
             })
             })

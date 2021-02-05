@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
-// @version      3.1
+// @version      3.3
 // @description  动漫之家去广告🚫，对日漫版漫画页进行增强：并排布局📖、图片高度自适应↕️、辅助翻页↔️、页码显示⏱、侧边目录栏📑、暗夜模式🌙，请设置即时注入模式以避免页面闪烁⚠️
 // @author       Byaidu
 // @match        *://*.dmzj.com/*
@@ -90,14 +90,18 @@
         $(function(){
             //上下方向键滚动页面，左右方向键切换章节
             let img_id=0;
+            let middle=0;
             function scrollUp(){
-                if (img_id>=1){
-                    if ($("#img_"+img_id).length>0&&$("#img_"+(img_id-1)).length>0&&$("#img_"+img_id).offset().top==$("#img_"+(img_id-1)).offset().top){
-                        img_id-=2;
-                    }else{
-                        img_id-=1;
+                if (middle==0||img_id==g_max_pic_count+1){
+                    if (img_id>=1){
+                        if ($("#img_"+img_id).length>0&&$("#img_"+(img_id-1)).length>0&&$("#img_"+img_id).offset().top==$("#img_"+(img_id-1)).offset().top){
+                            img_id-=2;
+                        }else{
+                            img_id-=1;
+                        }
                     }
                 }
+                middle=0;
                 info_app.img_id=img_id;
                 if (img_id!=0) $("html").stop()
                 $("html").animate({scrollTop: $("#img_"+img_id).offset().top}, 500);
@@ -111,6 +115,7 @@
                         img_id+=1;
                     }
                 }
+                middle=0;
                 info_app.img_id=img_id;
                 if (img_id!=g_max_pic_count+1) $("html").stop()
                 $("html").animate({scrollTop: $("#img_"+img_id).offset().top}, 500);
@@ -149,13 +154,14 @@
                 jQuery(".inner_img a").off("click");
             })
             window.addEventListener('mousewheel', function (){
+                middle=1;
                 setTimeout(function(){
                     for (var i = 0; i < 2; i++) {
-                        if ((img_id==g_max_pic_count+1&&unsafeWindow['jQuery'](".header-box").offset().top<$("#img_"+g_max_pic_count).offset().top+$("#img_"+g_max_pic_count).height())||
-                            ($("#img_"+img_id).length>0&&unsafeWindow['jQuery'](".header-box").offset().top<$("#img_"+img_id).offset().top))
+                        if ((img_id==g_max_pic_count+1&&pageYOffset<$("#img_"+g_max_pic_count).offset().top+$("#img_"+g_max_pic_count).height())||
+                            ($("#img_"+img_id).length>0&&pageYOffset<$("#img_"+img_id).offset().top))
                             img_id-=1;
-                        if ((img_id==g_max_pic_count&&unsafeWindow['jQuery'](".header-box").offset().top>$("#img_"+g_max_pic_count).offset().top+$("#img_"+g_max_pic_count).height())||
-                            ($("#img_"+(img_id+1)).length>0&&unsafeWindow['jQuery'](".header-box").offset().top>$("#img_"+(img_id+1)).offset().top))
+                        if ((img_id==g_max_pic_count&&pageYOffset>$("#img_"+g_max_pic_count).offset().top+$("#img_"+g_max_pic_count).height())||
+                            ($("#img_"+(img_id+1)).length>0&&pageYOffset>$("#img_"+(img_id+1)).offset().top))
                             img_id+=1;
                         info_app.img_id=img_id;
                     }

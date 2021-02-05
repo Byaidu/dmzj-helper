@@ -19,7 +19,7 @@
 
 (function() {
     'use strict';
-    //去广告
+    //去广告 
     GM_addStyle('*[style*="2147"]{display:none !important;}')
     GM_addStyle('*[style*="hidden;border"]{display:none !important;}')
     GM_addStyle('*[style*="width:960px;height:180px"]{display:none !important;}')

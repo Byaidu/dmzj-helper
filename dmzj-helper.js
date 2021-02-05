@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
-// @version      3.0
+// @version      3.1
 // @description  动漫之家去广告🚫，对日漫版漫画页进行增强：并排布局📖、图片高度自适应↕️、辅助翻页↔️、页码显示⏱、侧边目录栏📑、暗夜模式🌙，请设置即时注入模式以避免页面闪烁⚠️
 // @author       Byaidu
 // @match        *://*.dmzj.com/*
@@ -276,7 +276,7 @@ title="我是标题"
 :visible="drawer"
 :with-header="false"
 :direction="direction"
-@opened="handleOpened">
+@open="handleOpen">
 <el-menu background-color="transparent"
 text-color="#fff"
 active-text-color="#ffd04b"
@@ -303,9 +303,11 @@ active-text-color="#ffd04b"
                     handleSelect(key) {
                         location.href=this.items[key].href;
                     },
-                    handleOpened() {
-                        $('.el-drawer__body').animate({scrollTop:0}, 0);
-                        $('.el-drawer__body').animate({scrollTop:$('.el-menu>li:nth-child('+(ch_id-1)+')').offset().top-$('.el-drawer__body').offset().top}, 0);
+                    handleOpen() {
+                        setTimeout(function(){
+                            $('.el-drawer__body').animate({scrollTop:0}, 0);
+                            $('.el-drawer__body').animate({scrollTop:$('.el-menu>li:nth-child('+(ch_id-1)+')').offset().top-$('.el-drawer__body').offset().top}, 0);
+                        },0)
                     },
                 }
             })

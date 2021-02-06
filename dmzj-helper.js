@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
-// @version      3.4
+// @version      3.5
 // @description  动漫之家去广告🚫，对日漫版漫画页进行增强：并排布局📖、图片高度自适应↕️、辅助翻页↔️、页码显示⏱、侧边目录栏📑、暗夜模式🌙，请设置即时注入模式以避免页面闪烁⚠️
 // @author       Byaidu
 // @match        *://*.dmzj.com/*
+// @match        *://*.dmzj1.com/*
 // @license      GPL License
 // @resource     animate_css https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css
 // @resource     element_css https://unpkg.com/element-ui@2.15.0/lib/theme-chalk/index.css

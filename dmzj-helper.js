@@ -6,7 +6,7 @@
 // @author       Byaidu
 // @match        *://*.dmzj.com/*
 // @match        *://*.dmzj1.com/*
-// @license      GPL License
+// @license      GNU General Public License v3.0 or later
 // @resource     animate_css https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css
 // @resource     element_css https://unpkg.com/element-ui@2.15.0/lib/theme-chalk/index.css
 // @require      https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.min.js

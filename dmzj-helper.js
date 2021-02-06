@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
-// @version      3.3
+// @version      3.4
 // @description  动漫之家去广告🚫，对日漫版漫画页进行增强：并排布局📖、图片高度自适应↕️、辅助翻页↔️、页码显示⏱、侧边目录栏📑、暗夜模式🌙，请设置即时注入模式以避免页面闪烁⚠️
 // @author       Byaidu
 // @match        *://*.dmzj.com/*
+// @license      GPL License
 // @resource     animate_css https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css
 // @resource     element_css https://unpkg.com/element-ui@2.15.0/lib/theme-chalk/index.css
 // @require      https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.min.js
@@ -19,7 +20,7 @@
 
 (function() {
     'use strict';
-    //去广告 
+    //去广告
     GM_addStyle('*[style*="2147"]{display:none !important;}')
     GM_addStyle('*[style*="hidden;border"]{display:none !important;}')
     GM_addStyle('*[style*="width:960px;height:180px"]{display:none !important;}')
@@ -87,10 +88,19 @@
             $('html').removeClass('hide_head');
         }
         //延迟加载
-        $(function(){
+        $(function delay(){
             //上下方向键滚动页面，左右方向键切换章节
             let img_id=0;
             let middle=0;
+            let ch_id=0;
+            //兼容动漫之家助手
+            if (typeof(g_max_pic_count)=='undefined'){
+                setTimeout(function(){
+                    window.g_max_pic_count=$('.inner_img').length;
+                    delay();
+                },1000)
+                return;
+            }
             function scrollUp(){
                 if (middle==0||img_id==g_max_pic_count+1){
                     if (img_id>=1){
@@ -249,7 +259,6 @@ width:120px;
                 }
             })
             //加载目录
-            let ch_id=0;
             GM_xmlhttpRequest({
                 method: "GET",
                 headers: {"User-Agent": navigator.userAgent},

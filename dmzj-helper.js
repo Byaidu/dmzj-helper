@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
-// @version      3.5
+// @version      3.7
 // @description  动漫之家去广告🚫，对日漫版漫画页进行增强：并排布局📖、图片高度自适应↕️、辅助翻页↔️、页码显示⏱、侧边目录栏📑、暗夜模式🌙，请设置即时注入模式以避免页面闪烁⚠️
 // @author       Byaidu
 // @match        *://*.dmzj.com/*
@@ -47,12 +47,14 @@
         GM_addStyle('.el-drawer__wrapper{width:20%;}')
         GM_addStyle('.el-drawer{background:transparent !important;}')
         GM_addStyle('.el-drawer__body{background:rgba(0,0,0,.8) !important;overflow-y: auto}')
-        //漫画并页排布
-        GM_addStyle('#center_box{justify-content:center;flex-direction: row-reverse;display: flex;flex-wrap: wrap;}')
-        //漫画高度自适应
-        GM_addStyle('#center_box img{height:100vh !important;border:0px !important;padding:0px !important;}')
+        //漫画单页排布
+        GM_addStyle('#center_box img{height:150vh;border:0px !important;padding:0px !important;}')
+        //漫画双页排布
+        GM_addStyle('.page_double #center_box{justify-content:center;flex-direction: row-reverse;display: flex;flex-wrap: wrap;}')
+        GM_addStyle('.page_double #center_box img{height:100vh !important;}')
         //漫画上下间隔缩小
-        GM_addStyle('.inner_img{margin-top:20px !important;user-select: none;}')
+        GM_addStyle('.inner_img{margin-top:0px !important;user-select: none;}')
+        GM_addStyle('.curr_page{padding:15px;height:unset !important;line-height:unset !important;}')
         //修改配色方案
         GM_addStyle('.r1{color:#4d4d4d !important;}')
         GM_addStyle('.hotrm_about{color:#4d4d4d !important;}')
@@ -67,26 +69,26 @@
         GM_addStyle(element_css);
         GM_addStyle(':root{--animate-duration:500ms;}')
         //隐藏顶栏
-        GM_addStyle(".hide_head .header-box,.hide_head .funcdiv{display:none !important;}")
+        GM_addStyle(".header-box,.funcdiv{display:none !important;}")
         //更改跨页
         GM_addStyle('.skip{display:none !important;}')
         //读取cookie
         GM_addStyle(".dark_mode .mainNav,.dark_mode .header-box,.dark_mode .display_graybg,.dark_mode body{background:#212121 !important;}")
         if ($.cookie('dark_mode') === undefined) { $.cookie('dark_mode',true,{expires:999999,path:'/'}); }
-        if ($.cookie('hide_head') === undefined) { $.cookie('hide_head',false,{expires:999999,path:'/'}); }
+        if ($.cookie('page_double') === undefined) { $.cookie('page_double',true,{expires:999999,path:'/'}); }
         var dark_mode = $.cookie('dark_mode')=='true';
-        var hide_head = $.cookie('hide_head')=='true';
+        var page_double = $.cookie('page_double')=='true';
         //暗夜模式
         if (dark_mode){
             $('html').addClass('dark_mode');
         }else{
             $('html').removeClass('dark_mode');
         }
-        //隐藏顶栏
-        if (hide_head){
-            $('html').addClass('hide_head');
+        //双页显示
+        if (page_double){
+            $('html').addClass('page_double');
         }else{
-            $('html').removeClass('hide_head');
+            $('html').removeClass('page_double');
         }
         //延迟加载
         $(function delay(){
@@ -182,7 +184,7 @@
             let info = `
 <div id="info" @mouseover="show=1" @mouseleave="show=0">
 <transition name="custom-classes-transition" enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
-<template v-if="show"><div id="info_head" class="info_item" @click="switch_head" style="cursor:pointer;">{{message_head}}</div></template></transition>
+<template v-if="show"><div id="info_page" class="info_item" @click="switch_page" style="cursor:pointer;">{{message_page}}</div></template></transition>
 <transition name="custom-classes-transition" enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
 <template v-if="show"><div id="info_skip" class="info_item" @click="switch_skip" style="cursor:pointer;">{{message_skip}}</div></template></transition>
 <transition name="custom-classes-transition" enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
@@ -211,17 +213,17 @@ width:120px;
                 el: '#info',
                 data: {
                     dark:dark_mode,
+                    page:page_double,
                     show:0,
                     img_id:0,
                     skip:0,
-                    head:hide_head
                 },
                 computed: {
                     message_switch:  function () {
                         return this.dark?'☀️日间模式':'🌙夜间模式'
                     },
-                    message_head:  function () {
-                        return this.head?'📂显示顶栏':'📁隐藏顶栏'
+                    message_page:  function () {
+                        return this.page?'1️⃣单页排布':'2️⃣双页排布'
                     },
                     message_skip:  function () {
                         return '📖更改跨页'
@@ -248,14 +250,15 @@ width:120px;
                             $("#center_box>div:first-child").removeClass('skip');
                         }
                     },
-                    switch_head: function(){
-                        this.head=!this.head
-                        $.cookie('hide_head',this.head,{expires:999999,path:'/'});
-                        if (this.head){
-                            $('html').addClass('hide_head');
+                    switch_page: function(){
+                        this.page=!this.page
+                        $.cookie('page_double',this.page,{expires:999999,path:'/'});
+                        if (this.page){
+                            $('html').addClass('page_double');
                         }else{
-                            $('html').removeClass('hide_head');
+                            $('html').removeClass('page_double');
                         }
+                        $("html").animate({scrollTop: $("#img_"+img_id).offset().top}, 0);
                     },
                 }
             })

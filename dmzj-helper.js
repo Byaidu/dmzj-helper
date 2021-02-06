@@ -89,7 +89,6 @@
         }
         //延迟加载
         $(function delay(){
-            //上下方向键滚动页面，左右方向键切换章节
             let img_id=0;
             let middle=0;
             let ch_id=0;
@@ -101,6 +100,7 @@
                 },1000)
                 return;
             }
+            //上下方向键滚动页面，左右方向键切换章节
             function scrollUp(){
                 if (middle==0||img_id==g_max_pic_count+1){
                     if (img_id>=1){

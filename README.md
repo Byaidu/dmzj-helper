@@ -10,8 +10,6 @@ https://greasyfork.org/zh-CN/scripts/421045
 
 2. **油猴 -> 设置 -> 实验 -> 注入模式** 设置为 **即时**
 
-![](https://s3.ax1x.com/2021/02/06/yYiFDP.png)
-
 ## 功能列表
 
 1. 去除全站所有页面的广告和二维码
@@ -43,14 +41,6 @@ https://greasyfork.org/zh-CN/scripts/421045
 ## 项目地址
 
 https://github.com/Byaidu/dmzj-helper
-
-## 效果展示
-
-![](https://s3.ax1x.com/2021/02/06/yYPvND.png)
-
-![](https://s3.ax1x.com/2021/02/06/yYiS9H.png)
-
-![](https://s3.ax1x.com/2021/02/04/y130ER.png)
 
 ## 友链
 

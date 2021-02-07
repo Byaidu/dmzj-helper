@@ -37,13 +37,3 @@ https://greasyfork.org/zh-CN/scripts/421045
 浏览器：Chrome✅、Edge（Chromium 内核）✅
 
 扩展：Violentmonkey✅、Tampermonkey（需要设置即时注入模式）✅
-
-## 项目地址
-
-https://github.com/Byaidu/dmzj-helper
-
-## 友链
-
-逍遥橙子开发的哔哩哔哩以及动漫之家 UWP 客户端
-
-https://www.nsapps.cn/index.php/uwp.html

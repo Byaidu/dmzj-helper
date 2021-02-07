@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
-// @version      3.7
+// @version      3.8
 // @description  动漫之家去广告🚫，对日漫版漫画页进行增强：并排布局📖、图片高度自适应↕️、辅助翻页↔️、页码显示⏱、侧边目录栏📑、暗夜模式🌙，请设置即时注入模式以避免页面闪烁⚠️
 // @author       Byaidu
 // @match        *://*.dmzj.com/*
@@ -72,8 +72,11 @@
         GM_addStyle(".header-box,.funcdiv{display:none !important;}")
         //更改跨页
         GM_addStyle('.skip{display:none !important;}')
-        //读取cookie
+        //日间模式
+        GM_addStyle(".mainNav,.header-box,.display_graybg,body{background:#edecea !important;}")
+        //夜间模式
         GM_addStyle(".dark_mode .mainNav,.dark_mode .header-box,.dark_mode .display_graybg,.dark_mode body{background:#212121 !important;}")
+        //读取cookie
         if ($.cookie('dark_mode') === undefined) { $.cookie('dark_mode',true,{expires:999999,path:'/'}); }
         if ($.cookie('page_double') === undefined) { $.cookie('page_double',true,{expires:999999,path:'/'}); }
         var dark_mode = $.cookie('dark_mode')=='true';
@@ -103,6 +106,10 @@
                 },1000)
                 return;
             }
+            //去除原来的jquery事件
+            jQuery = unsafeWindow['jQuery'];
+            jQuery("body").off("keydown");
+            jQuery(".inner_img a").off("click");
             //上下方向键滚动页面，左右方向键切换章节
             function scrollUp(){
                 if (middle==0||img_id==g_max_pic_count+1){
@@ -158,13 +165,6 @@
             //resize事件触发图片和浏览器对齐
             $(window).resize(function() {
                 $("html").animate({scrollTop: $("#img_"+img_id).offset().top}, 0);
-            })
-            //去除原来的keydown事件
-            //https://stackoverflow.com/questions/5436874/how-do-i-unbind-jquery-event-handlers-in-greasemonkey
-            window.addEventListener('load', function (){
-                jQuery = unsafeWindow['jQuery'];
-                jQuery("body").off("keydown");
-                jQuery(".inner_img a").off("click");
             })
             window.addEventListener('mousewheel', function (){
                 middle=1;

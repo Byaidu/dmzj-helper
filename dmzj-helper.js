@@ -262,28 +262,6 @@ width:120px;
                     },
                 }
             })
-            //加载目录
-            GM_xmlhttpRequest({
-                method: "GET",
-                headers: {"User-Agent": navigator.userAgent},
-                url: $('.btn2').attr('href'),
-                onload: (res) => {
-                    let response = res.response
-                    var el = $( '<div></div>' );
-                    el.html(response);
-                    let $border=$('.cartoon_online_border a', el);
-                    $.each($border,function(index){
-                        if (location.href.indexOf(this.href)>=0){
-                            ch_id=index;
-                            GM_addStyle('.el-menu>li:nth-child('+(ch_id+1)+'){background:rgba(255,165,0,.5) !important}')
-                        }
-                        sidebar_app.items.push({
-                            title:this.text,
-                            href:this.href,
-                        })
-                    })
-                }
-            })
             //添加侧边目录栏
             let sidebar=`
 <div id="sidebar" @mouseleave="drawer=false">
@@ -328,6 +306,28 @@ active-text-color="#ffd04b"
                             $('.el-drawer__body').animate({scrollTop:$('.el-menu>li:nth-child('+(ch_id-1)+')').offset().top-$('.el-drawer__body').offset().top}, 0);
                         },0)
                     },
+                }
+            })
+            //加载目录
+            GM_xmlhttpRequest({
+                method: "GET",
+                headers: {"User-Agent": navigator.userAgent},
+                url: $('.btn2').attr('href'),
+                onload: (res) => {
+                    let response = res.response
+                    var el = $( '<div></div>' );
+                    el.html(response);
+                    let $border=$('.cartoon_online_border a', el);
+                    $.each($border,function(index){
+                        if (location.href.indexOf(this.href)>=0){
+                            ch_id=index;
+                            GM_addStyle('.el-menu>li:nth-child('+(ch_id+1)+'){background:rgba(255,165,0,.5) !important}')
+                        }
+                        sidebar_app.items.push({
+                            title:this.text,
+                            href:this.href,
+                        })
+                    })
                 }
             })
             })

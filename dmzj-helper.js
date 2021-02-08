@@ -40,7 +40,7 @@
             location.reload();
         }
         //修改滚动条样式
-        GM_addStyle('::-webkit-scrollbar {width: 4px;}')
+        GM_addStyle('::-webkit-scrollbar {width: 4px;height: 0px;}')
         GM_addStyle('::-webkit-scrollbar-thumb {background-color: rgb(48,48,48);border-radius: 2px;}')
         //修改element-ui样式
         GM_addStyle('.el-menu{border-right:0px !important;}')
@@ -98,7 +98,7 @@
             let img_id=0;
             let middle=0;
             let ch_id=0;
-            //兼容动漫之家助手
+            //计算页数
             if (typeof(g_max_pic_count)=='undefined'){
                 setTimeout(function(){
                     window.g_max_pic_count=$('.inner_img').length;

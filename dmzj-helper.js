@@ -108,8 +108,10 @@
             }
             //去除原来的jquery事件
             jQuery = unsafeWindow['jQuery'];
-            jQuery("body").off("keydown");
-            jQuery(".inner_img a").off("click");
+            if (jQuery!==undefined){
+                jQuery("body").off("keydown");
+                jQuery(".inner_img a").off("click");
+            }
             //上下方向键滚动页面，左右方向键切换章节
             function scrollUp(){
                 if (middle==0||img_id==g_max_pic_count+1){
@@ -265,7 +267,7 @@ width:120px;
             //添加侧边目录栏
             let sidebar=`
 <div id="sidebar" @mouseleave="drawer=false">
-<div id="toggle" @mouseover="drawer=true" style="top:0px;left:0px;height:100vh;width:20vw;position: fixed;"></div>
+<div id="toggle" @mouseover="drawer=true" style="top:0px;left:0px;height:100vh;width:10vw;position: fixed;"></div>
 <el-drawer
 title="我是标题"
 :size="size"

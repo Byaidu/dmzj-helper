@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
-// @version      3.8
+// @version      3.9
 // @description  动漫之家去广告🚫，对日漫版漫画页进行增强：并排布局📖、图片高度自适应↕️、辅助翻页↔️、页码显示⏱、侧边目录栏📑、暗夜模式🌙，请设置即时注入模式以避免页面闪烁⚠️
 // @author       Byaidu
 // @match        *://*.dmzj.com/*
@@ -93,16 +93,35 @@
         }else{
             $('html').removeClass('page_double');
         }
+        let img_id=0;
+        let middle=0;
+        let ch_id=0;
+        let items=[];
         //延迟加载
         $(function delay(){
-            let img_id=0;
-            let middle=0;
-            let ch_id=0;
             //计算页数
             if (typeof(g_max_pic_count)=='undefined'){
+                let parse=JSON.parse;
+                JSON.parse=function(res){
+                    let ret=parse(res);
+                    if (ret.chapters!==undefined){
+                        ret.chapters[0].data.reverse();
+                        ret.chapters[0].data.forEach(function(item,index){
+                            if (location.href.indexOf('https://manhua.dmzj.com/'+ret.comic_py+'/'+item.chapter_id+'.shtml?cid='+ret.id)>=0){
+                                ch_id=index;
+                            }
+                            items.push({
+                                title:item.chapter_title,
+                                href:'https://manhua.dmzj.com/'+ret.comic_py+'/'+item.chapter_id+'.shtml?cid='+ret.id,
+                            })
+                        })
+                    }
+                    return ret
+                };
                 setTimeout(function(){
                     window.g_max_pic_count=$('.inner_img').length;
                     delay();
+                    GM_addStyle('.el-menu>li:nth-child('+(ch_id+1)+'){background:rgba(255,165,0,.5) !important}')
                 },1000)
                 return;
             }
@@ -296,7 +315,7 @@ active-text-color="#ffd04b"
                     size:'100%',
                     modal:false,
                     direction: 'ltr',
-                    items: [],
+                    items: items,
                 },
                 methods:{
                     handleSelect(key) {

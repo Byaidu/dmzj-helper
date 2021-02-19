@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
-// @version      3.9
+// @version      4.0
 // @description  动漫之家去广告🚫，对日漫版漫画页进行增强：并排布局📖、图片高度自适应↕️、辅助翻页↔️、页码显示⏱、侧边目录栏📑、暗夜模式🌙，请设置即时注入模式以避免页面闪烁⚠️
 // @author       Byaidu
 // @match        *://*.dmzj.com/*
@@ -47,8 +47,8 @@
         GM_addStyle('.el-drawer__wrapper{width:20%;}')
         GM_addStyle('.el-drawer{background:transparent !important;}')
         GM_addStyle('.el-drawer__body{background:rgba(0,0,0,.8) !important;overflow-y: auto}')
-        //漫画单页排布
-        GM_addStyle('#center_box img{height:150vh;border:0px !important;padding:0px !important;}')
+        //去除图片边框
+        GM_addStyle('#center_box img{border:0px !important;padding:0px !important;}')
         //漫画双页排布
         GM_addStyle('.page_double #center_box{justify-content:center;flex-direction: row-reverse;display: flex;flex-wrap: wrap;}')
         GM_addStyle('.page_double #center_box img{height:100vh !important;}')

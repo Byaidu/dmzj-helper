@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ☄️动漫之家增强☄️
 // @namespace    http://tampermonkey.net/
-// @version      4.0
+// @version      4.5
 // @description  动漫之家去广告🚫，对日漫版漫画页进行增强：并排布局📖、图片高度自适应↕️、辅助翻页↔️、页码显示⏱、侧边目录栏📑、暗夜模式🌙，请设置即时注入模式以避免页面闪烁⚠️
 // @author       Byaidu
 // @match        *://*.dmzj.com/*
@@ -12,6 +12,7 @@
 // @require      https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.min.js
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.js
+// @require      https://cdn.jsdelivr.net/npm/jquery_lazyload@1.9.3/jquery.lazyload.min.js
 // @require      https://unpkg.com/element-ui@2.15.0/lib/index.js
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
@@ -33,7 +34,7 @@
     GM_addStyle('.foot{display:none !important;}')
     GM_addStyle('.float_code{display:none !important;}')
     //漫画页检测
-    if(location.href.indexOf("shtml")>=0){
+    if(location.href.search(/\/\d+\.shtml/)>=0){
         //切换到上下滚动阅读
         if($.cookie('display_mode')==0){
             $.cookie('display_mode',1,{expires:999999,path:'/'});
@@ -94,6 +95,7 @@
             $('html').removeClass('page_double');
         }
         let img_id=0;
+        let id_lock=0;
         let middle=0;
         let ch_id=0;
         let items=[];
@@ -125,82 +127,6 @@
                 },1000)
                 return;
             }
-            //去除原来的jquery事件
-            jQuery = unsafeWindow['jQuery'];
-            if (jQuery!==undefined){
-                jQuery("body").off("keydown");
-                jQuery(".inner_img a").off("click");
-            }
-            //上下方向键滚动页面，左右方向键切换章节
-            function scrollUp(){
-                if (middle==0||img_id==g_max_pic_count+1){
-                    if (img_id>=1){
-                        if ($("#img_"+img_id).length>0&&$("#img_"+(img_id-1)).length>0&&$("#img_"+img_id).offset().top==$("#img_"+(img_id-1)).offset().top){
-                            img_id-=2;
-                        }else{
-                            img_id-=1;
-                        }
-                    }
-                }
-                middle=0;
-                info_app.img_id=img_id;
-                if (img_id!=0) $("html").stop()
-                $("html").animate({scrollTop: $("#img_"+img_id).offset().top}, 500);
-
-            }
-            function scrollDown(){
-                if (img_id<=g_max_pic_count){
-                    if ($("#img_"+img_id).length>0&&$("#img_"+(img_id+1)).length>0&&$("#img_"+img_id).offset().top==$("#img_"+(img_id+1)).offset().top){
-                        img_id+=2;
-                    }else{
-                        img_id+=1;
-                    }
-                }
-                middle=0;
-                info_app.img_id=img_id;
-                if (img_id!=g_max_pic_count+1) $("html").stop()
-                $("html").animate({scrollTop: $("#img_"+img_id).offset().top}, 500);
-            }
-            $("#center_box").click(function(event){
-                if (event.clientY>$(window).height()/2){
-                    scrollDown();
-                }else{
-                    scrollUp();
-                }
-            })
-            $("body").keydown(function(event) {
-                if (event.keyCode == 38) {
-                    scrollUp();
-                } else if (event.keyCode == 40) {
-                    scrollDown();
-                } else if (event.keyCode == 37) {
-                    let location_new = $("#prev_chapter").attr("href");
-                    if(location_new.indexOf("shtml")>=0)
-                        location.href = location_new;
-                } else if (event.keyCode == 39) {
-                    let location_new = $("#next_chapter").attr("href");
-                    if(location_new.indexOf("shtml")>=0)
-                        location.href = location_new;
-                }
-            })
-            //resize事件触发图片和浏览器对齐
-            $(window).resize(function() {
-                $("html").animate({scrollTop: $("#img_"+img_id).offset().top}, 0);
-            })
-            window.addEventListener('mousewheel', function (){
-                middle=1;
-                setTimeout(function(){
-                    for (var i = 0; i < 2; i++) {
-                        if ((img_id==g_max_pic_count+1&&pageYOffset<$("#img_"+g_max_pic_count).offset().top+$("#img_"+g_max_pic_count).height())||
-                            ($("#img_"+img_id).length>0&&pageYOffset<$("#img_"+img_id).offset().top))
-                            img_id-=1;
-                        if ((img_id==g_max_pic_count&&pageYOffset>$("#img_"+g_max_pic_count).offset().top+$("#img_"+g_max_pic_count).height())||
-                            ($("#img_"+(img_id+1)).length>0&&pageYOffset>$("#img_"+(img_id+1)).offset().top))
-                            img_id+=1;
-                        info_app.img_id=img_id;
-                    }
-                },100);
-            })
             //添加右下角菜单
             let info = `
 <div id="info" @mouseover="show=1" @mouseleave="show=0">
@@ -351,6 +277,109 @@ active-text-color="#ffd04b"
                     })
                 }
             })
+            //预加载图片
+            $('img').lazyload();
+            //去除原来的jquery事件
+            jQuery = unsafeWindow['jQuery'];
+            if (jQuery!==undefined){
+                jQuery("body").off("keydown");
+                jQuery(".inner_img a").off("click");
+            }
+            //上下方向键滚动页面，左右方向键切换章节
+            function scrollUp(){
+              if (info_app.img_id==0) return;
+              var id=g_max_pic_count+1;
+              for (var i=1;i<=Math.min(info_app.img_id,g_max_pic_count);i++){
+                var $img=$(".inner_img:eq("+(i-1)+")");
+                if (((id_lock&&info_app.img_id>=1&&info_app.img_id<=g_max_pic_count)?$(".inner_img:eq("+(info_app.img_id-1)+")").offset().top:pageYOffset)<$img.offset().top+$img.height()+5){
+                  id=i;
+                  break;
+                }
+              }
+              var $img=$(".inner_img:eq("+0+")");
+              if (((id_lock&&info_app.img_id>=1&&info_app.img_id<=g_max_pic_count)?$(".inner_img:eq("+(info_app.img_id-1)+")").offset().top:pageYOffset)<$img.offset().top+5){
+                console.log($img.offset().top+5);
+                id=0;
+              }
+              var $img=$(".inner_img:eq("+(g_max_pic_count-1)+")");
+              id_lock++;
+              info_app.img_id=id;
+              var $img=$(".inner_img:eq("+(id-1)+")");
+              $("html").stop();
+              if (id==0){
+                $("html").animate({scrollTop: 0}, 500);
+              }else{
+                var $img=$(".inner_img:eq("+(id-1)+")");
+                $("html").animate({scrollTop: $img.offset().top}, 500);
+              }
+              setTimeout(function(){id_lock--;},500);
+            }
+            function scrollDown(){
+              if (info_app.img_id==g_max_pic_count+1) return;
+              var id=g_max_pic_count+1;
+              for (var i=Math.max(info_app.img_id,1);i<=g_max_pic_count;i++){
+                var $img=$(".inner_img:eq("+(i-1)+")");
+                if (((id_lock&&info_app.img_id>=1&&info_app.img_id<=g_max_pic_count)?$(".inner_img:eq("+(info_app.img_id-1)+")").offset().top:pageYOffset)<$img.offset().top-5){
+                  id=i;
+                  break;
+                }
+              }
+              id_lock++;
+              info_app.img_id=id;
+              var $img=$(".inner_img:eq("+(id-1)+")");
+              $("html").stop();
+              if (id==g_max_pic_count+1){
+                var $img=$(".inner_img:eq("+(g_max_pic_count-1)+")");
+                $("html").animate({scrollTop: $img.offset().top+$img.height()}, 500);
+              }else{
+                var $img=$(".inner_img:eq("+(id-1)+")");
+                $("html").animate({scrollTop: $img.offset().top}, 500);
+              }
+              setTimeout(function(){id_lock--;},500);
+            }
+            $("#center_box").click(function(event){
+                if (event.clientY>$(window).height()/2){
+                    scrollDown();
+                }else{
+                    scrollUp();
+                }
+            })
+            $("body").keydown(function(event) {
+                if (event.keyCode == 38) {
+                    scrollUp();
+                } else if (event.keyCode == 40) {
+                    scrollDown();
+                } else if (event.keyCode == 37) {
+                    let location_new = $("#prev_chapter").attr("href");
+                    if(location_new.indexOf("shtml")>=0)
+                        location.href = location_new;
+                } else if (event.keyCode == 39) {
+                    let location_new = $("#next_chapter").attr("href");
+                    if(location_new.indexOf("shtml")>=0)
+                        location.href = location_new;
+                }
+            })
+            //resize事件触发图片和浏览器对齐
+            $(window).resize(function() {
+                $("html").animate({scrollTop: $(".inner_img:eq("+(info_app.img_id)+")").offset().top}, 0);
+            })
+            function getID(){
+              var id=0;
+              for (var i=1;i<=g_max_pic_count;i++){
+                var $img=$(".inner_img:eq("+(i-1)+")");
+                if (pageYOffset>$img.offset().top-5&&pageYOffset<$img.offset().top+$img.height()-5){
+                  id=i;
+                  break;
+                }
+              }
+              var $img=$(".inner_img:eq("+(g_max_pic_count-1)+")");
+              if (pageYOffset>$img.offset().top+$img.height()-5){
+                id=g_max_pic_count+1;
+              }
+              if (id_lock==0) info_app.img_id=id;
+            }
+            setInterval(getID,100);
+            window.addEventListener('mousewheel', getID);
             })
     }
 })();
